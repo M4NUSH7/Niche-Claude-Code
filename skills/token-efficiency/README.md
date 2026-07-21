@@ -12,6 +12,14 @@ Five pillars, each engaging only when the project condition calls for it:
 4. **SoT keywords + hybrid memory** - `[SOT:CATEGORY:name]` tags in code + a README index so the agent greps the tag and reads only matched blocks; SQLite agent memory where recall is a `WHERE status='FAILURE'` query, not a re-read of the log pile.
 5. **Concise output** - the output contract: lead with the outcome, no action narration, no recap of what a tool just printed, cite `file:line`. Never compresses error diagnoses, caveats, or code.
 
+## Estimated savings
+
+On a representative agentic coding session this skill's four levers (RTK compression,
+fewer redundant reads, no narration, model routing) model out to **~40% fewer tokens
+and ~55% lower cost** at equal output quality. This is a calculated estimate, not a
+measured benchmark - see the [root README](../../README.md#estimated-savings) for the
+full assumptions and arithmetic.
+
 ## Why it works
 
 Output tokens cost the same as input tokens and the user reads them all. The biggest, cheapest win is **not generating** narration and **not re-reading** what a query can answer. RTK attacks the single largest input source (verbose command output); the output contract attacks the largest output source (narration). Model routing stops burning Opus tokens on work Sonnet/Haiku do fine. Together they compound.

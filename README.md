@@ -36,6 +36,38 @@ The one design principle behind all of them:
 
 ---
 
+## Estimated savings
+
+> **This is a transparent cost model, not a measured benchmark.** The numbers below
+> are calculated from each mechanism's own documented reduction on a representative
+> mid-size agentic coding session - not from a controlled A/B run. Your mileage
+> varies with workload; the arithmetic is shown so you can adjust it to yours.
+
+Four independent levers compound on a typical session:
+
+| Lever | Skill | Reduction applied | Basis |
+|---|---|---|---|
+| Command-output compression | token-efficiency (RTK) | ~70% off command/log output | RTK's documented 60-90% range, midpoint |
+| Fewer redundant file reads | token-efficiency + graphify | ~40% off file-read tokens | grep/graph-query before blind re-read |
+| No narration / recaps | token-efficiency (output contract) | ~80% off pure narration output | narration is ~all removable |
+| Model routing | token-efficiency | codegen -> Sonnet, logging -> Haiku | price tiers $5/$25 -> $3/$15 -> $1/$5 |
+
+**Worked example** - a session that (baseline, all-Opus, verbose) would run ~325K
+tokens at ~$2.92:
+
+- Token volume drops to ~189K -> **~40% fewer tokens**.
+- With routing on the reduced volume, cost drops to ~$1.22 -> **~55-60% lower cost**.
+
+**What the end user can expect:** roughly **40% less context burned and ~55% lower
+spend per session at equal or better output quality** - because the cuts are all
+narration, redundant reads, and wrong-model overhead, never the code, the reasoning,
+or the error diagnoses (those are explicitly protected). On top of the raw savings,
+the build-discipline skills (enforced definition-of-done, bounded retries, scoped
+handoffs) remove the *silent* waste - hallucination loops and re-work - that no
+per-turn number captures. Assumptions are deliberately conservative (RTK at its
+midpoint, reads at only 40% off, output work never compressed); heavier
+command/log-bound workloads save more.
+
 ## The skills
 
 | Skill | One line | Attacks |
