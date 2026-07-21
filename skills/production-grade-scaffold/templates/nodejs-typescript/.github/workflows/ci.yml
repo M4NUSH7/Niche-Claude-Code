@@ -1,0 +1,19 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci
+      - name: lint
+        run: npm run lint
+      - name: unit test
+        run: npm test
+      # SAST: add e.g. github/codeql-action here
+      # integration test: spin up ephemeral containers (Testcontainers) here
+      # build + sign: docker build, generate SBOM (syft), sign with cosign, attach SLSA provenance
+      - name: build
+        run: npm run build

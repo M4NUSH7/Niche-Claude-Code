@@ -1,0 +1,9 @@
+# never commit local config, scratch, or build junk
+.claude/
+.scratch/
+**/.scratch/
+**/__pycache__/
+*.pyc
+.DS_Store
+*.bak
+*.corrupt.bak

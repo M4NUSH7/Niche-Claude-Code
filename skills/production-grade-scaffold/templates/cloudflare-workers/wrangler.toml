@@ -1,0 +1,21 @@
+name = "production-grade-worker"
+main = "src/api/index.ts"
+compatibility_date = "2026-01-01"
+
+# D1 (edge SQLite) — single-writer semantics, see references/cloud-providers.md
+[[d1_databases]]
+binding = "DB"
+database_name = "app-db"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+# R2 (S3-compatible object storage, no egress fees)
+[[r2_buckets]]
+binding = "ASSETS"
+bucket_name = "app-assets"
+
+# KV (eventually-consistent global key-value — config/cache, not transactional data)
+[[kv_namespaces]]
+binding = "CACHE"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
+# Secrets: set via `wrangler secret put <NAME>` — never inline here.

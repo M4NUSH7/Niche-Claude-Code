@@ -1,0 +1,49 @@
+# Harness integrity checks (audit fixes #1, #2, #4).
+# Copy to .github/workflows/harness-check.yml
+#
+# Three independent jobs, run in parallel (audit #9 - no needless `needs:` chains;
+# apply the same principle to your app CI: lint/typecheck/test in parallel, build after).
+name: Harness Check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  # Audit #1: .agents/ must exactly match what sync_harness.py would generate,
+  # and generated indexes/settings must not be hand-edited.
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # full history + tags (gate checks need tags)
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Config tree drift check
+        run: python harness/sync_harness.py --check
+
+  # Audit #2/#7: checkbox state, git gate tags, and disk must agree.
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Gate/status reconciliation
+        run: python harness/harness_status.py --check
+
+  # Audit #4: no literal secrets anywhere in the tree (context packs included).
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

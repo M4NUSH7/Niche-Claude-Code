@@ -1,0 +1,35 @@
+{
+  "name": "production-grade-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/api/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/api/server.js",
+    "test": "vitest run",
+    "lint": "eslint . --max-warnings=0",
+    "migrate": "prisma migrate deploy",
+    "migrate:dev": "prisma migrate dev"
+  },
+  "dependencies": {
+    "express": "^4.19.0",
+    "helmet": "^7.1.0",
+    "cors": "^2.8.5",
+    "zod": "^3.23.0",
+    "jose": "^5.6.0",
+    "ioredis": "^5.4.0",
+    "@prisma/client": "^5.16.0",
+    "pino": "^9.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "tsx": "^4.16.0",
+    "vitest": "^1.6.0",
+    "eslint": "^9.5.0",
+    "prisma": "^5.16.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.0",
+    "@types/cors": "^2.8.17"
+  }
+}

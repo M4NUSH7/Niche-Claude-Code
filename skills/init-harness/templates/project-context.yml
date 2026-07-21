@@ -1,0 +1,67 @@
+# project-context.yml - drop this at your repo root, fill it in, run /init-harness
+#
+# Design rule: this file contains ONLY what cannot be derived. Everything mechanical
+# (sharedWritePaths, readGuard, gateGuard, logging, core skills) is inferred - leaving it
+# out is correct, not lazy.
+#
+# Fields marked #ASK may be omitted entirely: the skill will ASK rather than guess.
+# Omitting them is safe. Guessing them is not - a wrong gate topology silently unblocks
+# work that should be blocked.
+
+project: my-project
+repo_root: .
+platform: windows                 # windows | linux | macos -> gitignore/CI/interpreter defaults
+
+# 'auto' => preflight DETECTS and VERIFIES by execution, then pins the absolute path.
+# Never write a bare "python" here: it may resolve to a Store stub or a foreign venv,
+# and a hook whose interpreter can't start fails ABSENT - no block, no log, no trace.
+python: auto
+
+# Prose. Used ONLY to seed SoT keyword categories. NEVER used to infer gates or terminals.
+goal: >
+  Ingest market data from multiple providers, validate against contracts, engineer
+  features and signals, backtest under CPCV, and expose a CLI plus a desktop terminal.
+
+# ---------------------------------------------------------------------------
+# #ASK - the human decisions. Omit any of these and you'll be asked instead.
+# ---------------------------------------------------------------------------
+
+# Parallel terminals. Each owns a domain (paths), waits on gates, may control gates.
+# One terminal SHOULD be never_blocked so parallelism never fully stalls.
+domains:
+  - name: engine core / providers / contracts
+    paths: ["packages/**", "contracts/**", "data/**"]
+    owns_gates: [lake-trusted]
+    blocked_until: []
+  - name: quant / features / signals / training
+    paths: ["quant/**", "models/**"]
+    blocked_until: [lake-trusted]
+    owns_gates: [signals-v1]
+  - name: LLM harness / safeguards
+    paths: ["harness_llm/**"]
+    blocked_until: [lake-trusted]
+  - name: product plane (CLI / desktop / web)
+    paths: ["apps/**", "cli/**"]
+    never_blocked: true           # builds against artifact schemas from day 1
+
+# Gates are git tags. A tag means "this is TRUE NOW", not "this happened once"  - 
+# a pivot that invalidates a gate REVOKES the tag and it must be re-earned.
+gates:
+  lake-trusted: {owner: t1, description: "Data lake validated; quant + harness may start"}
+  signals-v1:   {owner: t2, description: "Signal set passes CPCV/DSR"}
+
+# Auto-escalate review + require the security checklist before merge.
+sensitive_paths: ["**/credentials/**", "**/keys/**", "**/execution/**", "**/broker/**"]
+
+# Renames the domain-reviewer agent slot (design-reviewer | data-reviewer | backtest-reviewer...)
+domain_reviewer: data-reviewer
+
+# Topic -> architecture doc, BY FILENAME (never "doc 03" - renumbering breaks routing).
+doc_routing:
+  data:     architecture/data/01_providers.md
+  signals:  architecture/math/02_signals.md
+  backtest: architecture/math/05_backtest_protocol.md
+  security: architecture/ops/02_security_and_testing.md
+
+# Beyond the core four (ponytail, code-review, security-pass, deep-research).
+skills_extra: []

@@ -1,0 +1,18 @@
+// Rename to prisma/schema.prisma once you initialize Prisma (`npx prisma init`).
+// Kept as .example here so the scaffold doesn't assume Prisma is already installed.
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Example aggregate root — replace with your actual domain model.
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}

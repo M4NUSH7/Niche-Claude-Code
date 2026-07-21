@@ -1,0 +1,47 @@
+# goal-packet.template.yml - the brief an orchestrator stamps into every subagent handoff.
+# Doctrine: templates/docs/12_graph_of_loops.md. Copy/fill one per node; do not leave fields
+# as prose the receiving agent has to interpret - success_criteria must be machine-checkable.
+
+objective: >
+  <one sentence: what done looks like in the world, not "implement X">
+
+success_criteria:
+  # Each item must be checkable by a script/grep/test, not a judgment call.
+  - "<e.g. `pytest tests/test_foo.py` exits 0>"
+  - "<e.g. `contracts/foo.schema.json` validates the new output file>"
+
+scope_boundaries:
+  # What this task must NOT touch - other terminals' paths, decisions, config.
+  - "<e.g. do not edit apps/domain-b/** (t3's domain)>"
+  - "<e.g. do not raise effort past config maxEffort>"
+
+inputs:
+  # Files, context packs, prior handoff notes this node starts with.
+  - "<e.g. context/agents/t2-context.md>"
+  - "<e.g. memory/handoff/t2/2026-07-20-previous-attempt.md, if present>"
+
+outputs:
+  # File paths this node must produce - not descriptions of what it should do.
+  - "<e.g. apps/domain-a/src/foo.ts>"
+  - "<e.g. tests/test_foo.py>"
+
+budget:
+  # Bounded, VISIBLE retry limit - hitting it is a `blocked` terminal, not another silent retry.
+  max_retries: 2
+  max_turns: <n>
+
+escalation:
+  # Where ambiguous/blocked results go. Never silent - see 12_graph_of_loops.md Sec.4.
+  handoff_note: "memory/handoff/<tN|session>/<YYYY-MM-DD>-<topic>.md"
+  decision_note_if_blocked: "memory/decisions/<YYYY-MM-DD>-<topic>.md"
+
+terminals:
+  # Declare which of the five this node can return. Checked in code (success_criteria run by
+  # the orchestrator/verifier), never inferred from the subagent's own final message.
+  declared: [success, partial, failure, ambiguity, blocked]
+  routes:
+    success: "<next node / next checkbox>"
+    partial: "<retry narrower, or orchestrator judgment>"
+    failure: "<agent_compile_logs FAILURE row; `- [~]` if it invalidates built work>"
+    ambiguity: "<memory/handoff/ note + `- [!]` blocked checkbox>"
+    blocked: "<memory/handoff/ note + `- [!]` blocked checkbox>"

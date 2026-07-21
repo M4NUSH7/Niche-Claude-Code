@@ -1,0 +1,15 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Replace with your language's setup action (Rust/Go/C++/etc.)
+      - name: lint
+        run: echo "add your linter here"
+      - name: unit test
+        run: echo "add your test runner here"
+      - name: fuzz (short, time-boxed)
+        run: echo "add a short fuzz run here targeting src/protocol — see tests/fuzz/README.md"
+      # SAST, build+sign (SBOM, Cosign, SLSA provenance) same as references/infrastructure-delivery.md

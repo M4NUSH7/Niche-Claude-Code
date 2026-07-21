@@ -1,0 +1,21 @@
+service: production-grade-api
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  environment:
+    DATABASE_URL: ${env:DATABASE_URL}
+    JWKS_URI: ${env:JWKS_URI}
+    REDIS_URL: ${env:REDIS_URL}
+
+functions:
+  api:
+    handler: dist/handlers/api.handler
+    events:
+      - httpApi: "*"
+    # Keep the package small - cold start scales with bundle size, see references/architecture-archetypes.md #3.
+    timeout: 10
+    memorySize: 512
+
+# Alternative: swap this file for a SAM template.yaml or CDK stack if not using the
+# Serverless Framework - the layer boundaries below stay the same either way.

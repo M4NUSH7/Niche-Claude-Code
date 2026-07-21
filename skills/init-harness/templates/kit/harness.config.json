@@ -1,0 +1,160 @@
+{
+  "project": "REPLACE-ME",
+
+  "_toolchainPolicy": "Tools the harness SHELLS OUT TO are pinned here by absolute path and installed to the GLOBAL/user toolchain (scoop on Windows; `uv python install` for Python). Never vendored in-project, never a foreign venv, never a bare name that PATH may resolve to a Store stub. Project LIBRARIES (pnpm/cargo/uv deps) are unaffected - this governs harness tooling only. preflight.py verifies each by EXECUTING it and fails loud.",
+  "toolchain": {
+    "python": "REPLACE-ME-ABSOLUTE-PATH",
+    "git": "git",
+    "sqlite3": "sqlite3",
+    "rtk": "rtk"
+  },
+  "python": "REPLACE-ME-ABSOLUTE-PATH",
+
+  "_attributionPolicy": "Claude does NOT tag itself as a git contributor by default. sync stamps settings.attribution = {commit:'', pr:''}, which removes the Co-Authored-By trailer and the PR attribution line. Set attribution.enabled=true below to restore it. (`includeCoAuthoredBy` is the deprecated spelling; `attribution` supersedes it.)",
+  "attribution": {
+    "enabled": false,
+    "commit": "",
+    "pr": ""
+  },
+
+  "_permissionsPolicy": "Profile chosen at init via MCQ; `deny` beats `ask` beats `allow`. NEVER ship Bash(*) with an empty deny list - that is root with extra steps. The deny list is the load-bearing part: destructive git (force-push, hard reset, clean -fdx, tag -d), secret reads (.env, *.pem, .ssh), and writes to generated .agents/ are blocked outright. Gate revocation (`git tag -d`) is denied to agents ON PURPOSE - it is a human-approved pivot action (principle #11).",
+  "permissions": {
+    "profile": "balanced",
+    "_profiles": {
+      "strict": "Reads/greps free; every write and every shell command asks. Slowest, safest. Unfamiliar codebase, production repo, or you want to watch every move.",
+      "balanced": "RECOMMENDED. Reads + edits + safe git/file commands allowed; network, installers, and destructive git ask; secrets and history-rewrites denied. The harness hooks are the real enforcement (read guard, gate guard, domain boundaries).",
+      "permissive": "Most Bash allowed; only the deny list blocks. Fast, for a throwaway/sandbox repo you can delete. NOT for anything you care about.",
+      "custom": "Hand-authored allow/ask/deny in .claude/settings.json. sync will not overwrite it."
+    }
+  },
+
+  "_modelPolicy": "Rankings follow the token-efficiency skill's hard rule (expensive thinks / cheap types / cheapest logs) via thinker->workhorse->utility. TWO DELIBERATE DEVIATIONS, same reasoning both times - the skill's pins predate newer models at identical price: (1) the skill pins the coding-subagent orchestrator to claude-opus-4-6; we use claude-opus-4-8 - same $5/$25 per MTok, higher ceiling. (2) the skill pins coders to claude-sonnet-4-6; we use claude-sonnet-5 - same $3/$15 per MTok tier, near-Opus quality on coding and agentic work. Do not 'fix' either back. sessionDefault is the INTERACTIVE session model (Opus latest) and is deliberately NOT models.workhorse.",
+  "sessionDefault": "claude-opus-4-8",
+  "models": {
+    "thinker": "claude-opus-4-8",
+    "workhorse": "claude-sonnet-5",
+    "utility": "claude-haiku-4-5"
+  },
+
+  "agents": {
+    "architect":       { "role": "thinker",   "effort": "high" },
+    "planner":         { "role": "thinker",   "effort": "high" },
+    "coder":           { "role": "workhorse", "effort": "high" },
+    "reviewer":        { "role": "thinker",   "effort": "high" },
+    "domain-reviewer": { "role": "thinker",   "effort": "high" },
+    "verifier":        { "role": "workhorse", "effort": "medium" },
+    "logger":          { "role": "utility",   "effort": "low" }
+  },
+  "maxEffort": "high",
+
+  "_terminalsPolicy": "EXAMPLE - VARIABLE COUNT. This t1..t4 shape illustrates the pattern (one gate owner, one gated feature domain, one sensitive+gated domain, one never-blocked domain) - it is NOT a fixed four to fill in. Generate exactly as many tN entries as the phased plan's domains genuinely need: 1 if the domains don't split, N if they do (decision-guide.md Sec. 1's simultaneous-progress test). The two invariants that hold at ANY N: at least one terminal has neverBlocked:true, and a gate exists only when work is actively wrong without it - sync_harness.py's verify_terminal_topology() and verify_init.py both fail loud if no terminal is neverBlocked.",
+  "terminals": {
+    "t1": {
+      "domain": "core / infra / data contracts",
+      "paths": ["packages/**", "contracts/**", "infra/**", "database/**"],
+      "blockedUntil": [],
+      "ownsGates": ["scaffold-complete"],
+      "neverBlocked": false
+    },
+    "t2": {
+      "domain": "feature domain A",
+      "paths": ["apps/domain-a/**"],
+      "blockedUntil": ["scaffold-complete"],
+      "ownsGates": [],
+      "neverBlocked": false
+    },
+    "t3": {
+      "domain": "feature domain B (sensitive)",
+      "paths": ["apps/domain-b/**"],
+      "blockedUntil": ["scaffold-complete"],
+      "ownsGates": ["security-pass-domain-b"],
+      "neverBlocked": false
+    },
+    "t4": {
+      "domain": "frontend / design system",
+      "paths": ["apps/web/**", "components/**"],
+      "blockedUntil": [],
+      "ownsGates": [],
+      "neverBlocked": true
+    }
+  },
+
+  "gates": {
+    "scaffold-complete":      { "owner": "t1", "description": "Repo scaffold done; T2/T3 may start" },
+    "security-pass-domain-b": { "owner": "t3", "description": "Security checklist passed on sensitive domain" }
+  },
+
+  "_pivotPolicy": "A pivot is HUMAN-GATED (core principle #11). No agent may unilaterally declare work dead. A pivot writes to three places: a memory/decisions/ note (narrative + pros/cons), an agent_compile_logs FAILURE row (queryable 'do not retry'), and a one-line salvage rule on the relevant agent definition. If a pivot invalidates a gate, the tag is REVOKED (git tag -d + push --delete) and must be re-earned; gate_guard.py needs no change - 'does the tag exist?' correctly answers no. See 11_pivots.md.",
+  "pivots": {
+    "requireHumanApproval": true,
+    "notesDir": "memory/decisions",
+    "supersededMarker": "- [~]",
+    "revokeGatesOnPivot": true
+  },
+
+  "sensitivePaths": ["**/payments/**", "**/ledger/**", "**/auth/**", "**/admin/**", "**/identity/**"],
+
+  "sharedWritePaths": [
+    ".bld/**", "memory/**", "context/**", "architecture/**", "setup/**",
+    "*.md", ".claude/**", ".agents/**", ".skills/**", "harness/**",
+    ".github/**", ".env.example"
+  ],
+
+  "docRouting": {
+    "database": "architecture/03_database.md",
+    "api":      "architecture/02_api.md",
+    "security": "architecture/08_security.md",
+    "design":   "architecture/09_design.md"
+  },
+
+  "readGuard": {
+    "maxLines": 500,
+    "exempt": ["memory/INDEX.md", ".bld/**"]
+  },
+
+  "_gateGuardPolicy": "C1/C3: the DEFAULT write sandbox for a terminal is its own git worktree (.claude/worktrees/tN/ on branch harness/tN, spawn its agents with isolation: \"worktree\") - a terminal cannot reach another terminal's files from inside its own checkout. gate_guard.py's job shrank to what a worktree cannot express: sensitivePaths (below) + human-gated actions, always enforced regardless of worktree. Its domain-glob check (terminals[t].paths) is kept only as a SECONDARY/advisory safety net for terminals not yet worktree-isolated, or for a Bash write that escaped its worktree - the hook's matcher never covers Bash. See 05_hooks_and_logging.md 'Worktree write-gate (C1/C3)'.",
+  "gateGuard": {
+    "enforce": true,
+    "failOpenWhenUnconfigured": true
+  },
+
+  "logging": {
+    "mode": "jsonl",
+    "foldTo": "sqlite",
+    "resultSummaryChars": 500
+  },
+
+  "_sotPolicy": "Seed categories from the project goal at init (token-efficiency references/sot-framework.md). One-offs get [SOT:IDX:name]; promote to a category at frequency >= 5 during checkpoints. Agents grep tags BEFORE reading - never blind-scan.",
+  "sot": {
+    "categories": ["DATA", "FEATURE", "SIGNAL", "BACKTEST", "RISK", "HARNESS", "CONTRACT"],
+    "indexPath": "README.md"
+  },
+
+  "rtk": {
+    "enabled": true,
+    "note": "60-90% output compression on dev CLI commands, <10ms overhead, unknown subcommands pass through. Verify with `rtk --version && rtk gain` - never reinstall blindly. DO NOT instruct agents to type the `rtk` prefix themselves: if the user-tier PreToolUse hook (~/.claude/hooks/rtk-rewrite.sh, from the token-efficiency skill) is installed, it rewrites `git status` -> `rtk git status` mechanically before execution, and already-prefixed commands pass through untouched. A prompt-level prefix instruction is redundant there and unreliable everywhere else - it decays over a session and never reaches subagents. If the hook is NOT installed, install it rather than asking the model to remember."
+  },
+
+  "memory": {
+    "vault": "memory/",
+    "shardDir": ".agents/logs",
+    "shardPattern": "t*.db",
+    "db": ".agents/master.db",
+    "schema": "harness/memory-schema.sql",
+    "_division": "vault = human-curated decisions + pivot narratives (single source of long-term truth, principle #4). shards (.agents/logs/tN.db, one per terminal, from the vendored harness/memory-schema.sql) = agent working logs, written independently per terminal. db (.agents/master.db) = DERIVED master, rebuilt from all shards by harness/build_master.py (idempotent, never hand-written) - read-only for recall. One boundary, never two sources for the same fact.",
+    "compression": "one-level",
+    "_compressionNote": "agent_log -> agent_compile_log -> STOP. Do NOT recursively re-compress compile rows: summarizing summaries destroys the specifics a pivot exists to preserve ('LSTMs overfit on 2019 data' -> 'we tried some models'). Compile rows are indexed; recall is a WHERE clause, not a read. If it ever bloats, ARCHIVE old rows out - do not re-compress."
+  },
+
+  "_skillsPolicy": "A skill resolves by NAME, from the first store that has it: project .skills/<name>/SKILL.md, then user ~/.claude/skills/<name>/SKILL.md, then built-in. `path` is therefore an OPTIONAL override - set it only to force a project-local copy that must NOT track the user/built-in version (pinned fork, project-specific edits). Omit it and the skill resolves wherever it actually lives. A `path` pointing at a file that does not exist is dead config: the skill still loads via its own description, so the entry never errors and the drift goes unnoticed. Filenames are SKILL.md (uppercase) - the lowercase skill.md in the original template matched nothing on a case-sensitive filesystem.",
+  "skills": {
+    "autoLoad": ["token-efficiency"],
+    "available": [
+      { "name": "ponytail",      "loadOn": "writing features, refactoring, any new abstraction" },
+      { "name": "ponytail-review", "loadOn": "/ponytail-review - reviewing a diff for over-engineering" },
+      { "name": "code-review",   "loadOn": "/code-review" },
+      { "name": "deep-research", "loadOn": "explicit research request" },
+      { "name": "security-review", "loadOn": "/security-review or touching sensitivePaths" }
+    ]
+  }
+}

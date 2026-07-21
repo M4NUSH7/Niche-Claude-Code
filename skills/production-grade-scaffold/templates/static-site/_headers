@@ -1,0 +1,8 @@
+# Security headers at the CDN/host layer — no app process exists to set these at runtime.
+# Works as-is on Cloudflare Pages / Netlify; adapt syntax for CloudFront (response headers policy)
+# or Azure Static Web Apps (staticwebapp.config.json) — see references/cloud-providers.md.
+/*
+  Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Strict-Transport-Security: max-age=31536000; includeSubDomains

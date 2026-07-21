@@ -1,0 +1,43 @@
+# ---- harness (append to project .gitignore) ----
+
+# C1/C3: per-terminal git worktrees are the write sandbox - each is its own checkout on
+# its own branch (harness/tN); the checkout itself must never be tracked by the main tree
+# (git worktree already keeps the branch's commits in .git, this only excludes the working
+# copy directory scaffold.sh creates under .claude/worktrees/).
+.claude/worktrees/
+
+# Audit #11: Obsidian per-machine state churns; keep only stable vault config
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+
+# Audit #4: secrets live only in local env files
+.env
+.env.local
+.env.*.local
+.env.production
+
+# Hook logs: JSONL is transient (folded into SQLite); DBs are local audit trails
+.claude/logs/**/*.jsonl
+.claude/logs/**/*.db
+.claude/logs/**/*.db-wal
+.claude/logs/**/*.db-shm
+.claude/logs/**/hooks.jsonl
+.agents/logs/**/*.jsonl
+.agents/logs/**/*.db
+.agents/logs/**/*.db-wal
+.agents/logs/**/*.db-shm
+.agents/logs/**/hooks.jsonl
+
+# D1: per-terminal memory shards (.agents/logs/tN.db) are covered above; master.db is the
+# DERIVED rebuild of those shards (harness/build_master.py) - never hand-written, never tracked
+.agents/logs/t*.db
+.agents/logs/t*.db-wal
+.agents/logs/t*.db-shm
+.agents/master.db
+.agents/master.db-wal
+.agents/master.db-shm
+
+# keep the generated prompt stubs tracked:
+!.claude/logs/**/prompt.md
+!.agents/logs/**/prompt.md

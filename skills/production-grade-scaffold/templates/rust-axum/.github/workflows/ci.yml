@@ -1,0 +1,19 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with: { toolchain: stable }
+      - name: lint
+        run: cargo clippy --all-targets -- -D warnings
+      - name: format check
+        run: cargo fmt --check
+      - name: unit test
+        run: cargo test
+      # integration test: spin up ephemeral containers (Testcontainers-rs) here
+      # build + sign: docker build, generate SBOM (syft), sign with cosign, attach SLSA provenance
+      - name: build
+        run: cargo build --release
