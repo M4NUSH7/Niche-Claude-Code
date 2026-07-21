@@ -36,3 +36,7 @@ Install (cross-platform, verified): `uv tool install "scrapling[all]"` then `scr
 ## Guardrails
 
 Only scrape content you are authorized to access; respect robots.txt and ToS (`robots_txt_obey = True`); do not bypass paywalls/auth without permission; never scrape personal/sensitive data.
+
+---
+
+**Related:** a point tool; when you need to research across platforms rather than scrape one site, see [agent-reach](../agent-reach/). See the [root README](../../README.md) for how the skills interlock and navigate.

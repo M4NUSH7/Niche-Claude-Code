@@ -36,3 +36,7 @@ Say "create a skill", "improve/optimize this skill", "run evals", "benchmark a s
 | `eval-viewer/generate_review.py` | Render outputs + benchmark for human review |
 | `agents/{grader,comparator,analyzer}.md` | Grading, blind A/B, and analysis subagents |
 | `references/schemas.md` | JSON structures for evals/grading/benchmark |
+
+---
+
+**Related:** pairs with [install-skill](../install-skill/) - skill-creator authors and measures, install-skill packages and installs. See the [root README](../../README.md) for how the skills interlock and navigate.

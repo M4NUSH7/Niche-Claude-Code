@@ -34,3 +34,7 @@ Fires when scaffolding a new app/service, or auditing one before it ships. It re
 | `references/cloud-providers.md` | AWS / Azure / Cloudflare specifics |
 | `references/ui-components.md` | Routes to the `ui-standout` skill for the Presentation layer |
 | `templates/<archetype-or-stack>/` | Layered app skeletons per stack/archetype |
+
+---
+
+**Related:** embeds into [init-harness](../init-harness/)'s context-bootstrap for greenfield apps; routes to [ui-standout](../ui-standout/) for the UI/Presentation layer. See the [root README](../../README.md) for how the skills interlock and navigate.

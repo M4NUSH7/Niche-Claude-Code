@@ -40,3 +40,7 @@ Say "research X", "find sources on Y", "search YouTube/GitHub/RSS for Z", or sha
 ## Cowork edition
 
 The `-cowork` variant drops the Windows PowerShell smoke script and uses `python3`/Linux paths for the Cowork sandbox.
+
+---
+
+**Related:** pairs with the deep-research skill for synthesis; for scraping a single protected site instead, see [scrapling](../scrapling/). See the [root README](../../README.md) for how the skills interlock and navigate.

@@ -35,3 +35,7 @@ Install (cross-platform): `uv tool install graphifyy` (pip package; not a scoop 
 | `references/update-and-watch.md` | Building and keeping the graph current |
 | `references/exports-and-mcp.md` | SVG/GraphML/Neo4j export + the `graphify-mcp` server |
 | `references/architecture.md` / `how-it-works.md` | The extraction pipeline |
+
+---
+
+**Related:** feed its query/path/explain results into an [init-harness](../init-harness/) Goal Packet's `inputs`; complements [token-efficiency](../token-efficiency/)'s read-only discipline. See the [root README](../../README.md) for how the skills interlock and navigate.

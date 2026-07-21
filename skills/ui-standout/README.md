@@ -29,3 +29,7 @@ Fires before you build or choose any UI component/screen/layout/form, when a UI 
 | `references/component-map.md` | The use-case -> component map + catalog (Layers 0-1) |
 | `references/taste-gate.md` | The 46 anti-slop rules + transform vocabulary (Layer 2) |
 | `references/design-principles.md` | The 17 principle references incl. Von Restorff (Layer 3) |
+
+---
+
+**Related:** folds into [production-grade-scaffold](../production-grade-scaffold/) as its Presentation-layer method; its taste gate is part of that scaffold's minimum bar. See the [root README](../../README.md) for how the skills interlock and navigate.

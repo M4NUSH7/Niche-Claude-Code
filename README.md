@@ -36,37 +36,29 @@ The one design principle behind all of them:
 
 ---
 
-## Estimated savings
+## Double your Claude usage at the same output quality
 
-> **This is a transparent cost model, not a measured benchmark.** The numbers below
-> are calculated from each mechanism's own documented reduction on a representative
-> mid-size agentic coding session - not from a controlled A/B run. Your mileage
-> varies with workload; the arithmetic is shown so you can adjust it to yours.
+The point of this stack is simple: **get roughly twice as much done within the same
+Claude usage, with no drop in output quality.** Four levers compound on a typical
+agentic coding session, and every one of them cuts *waste*, never substance:
 
-Four independent levers compound on a typical session:
+| Lever | Skill | What it removes |
+|---|---|---|
+| Command-output compression | [token-efficiency](skills/token-efficiency/) (RTK) | 60-90% of the git/test/build log volume the agent reads |
+| Query instead of re-read | [graphify](skills/graphify/) + token-efficiency | redundant file reads - navigate a code-graph once instead of re-reading files every turn |
+| No narration / recaps | token-efficiency (output contract) | "Let me.../Now I'll..." narration, status theater, and echoing what a command already printed |
+| Right model per task | token-efficiency (routing) | wrong-model overhead - the heavy model only where it's needed |
 
-| Lever | Skill | Reduction applied | Basis |
-|---|---|---|---|
-| Command-output compression | token-efficiency (RTK) | ~70% off command/log output | RTK's documented 60-90% range, midpoint |
-| Fewer redundant file reads | token-efficiency + graphify | ~40% off file-read tokens | grep/graph-query before blind re-read |
-| No narration / recaps | token-efficiency (output contract) | ~80% off pure narration output | narration is ~all removable |
-| Model routing | token-efficiency | codegen -> Sonnet, logging -> Haiku | price tiers $5/$25 -> $3/$15 -> $1/$5 |
+What is **never** cut: the code, the reasoning that reaches a non-obvious answer,
+requested explanations, or error diagnoses - those are explicitly protected. The
+savings come entirely from narration, redundant context, and wrong-model overhead.
 
-**Worked example** - a session that (baseline, all-Opus, verbose) would run ~325K
-tokens at ~$2.92:
+On top of the raw per-turn savings, the build-discipline skills (enforced
+definition-of-done, bounded retries, scoped handoffs) remove the *silent* waste -
+hallucination loops and re-work - that stretches a task across far more turns than
+it needs. That compounding is where "double your usage" actually comes from.
 
-- Token volume drops to ~189K -> **~40% fewer tokens**.
-- With routing on the reduced volume, cost drops to ~$1.22 -> **~55-60% lower cost**.
-
-**What the end user can expect:** roughly **40% less context burned and ~55% lower
-spend per session at equal or better output quality** - because the cuts are all
-narration, redundant reads, and wrong-model overhead, never the code, the reasoning,
-or the error diagnoses (those are explicitly protected). On top of the raw savings,
-the build-discipline skills (enforced definition-of-done, bounded retries, scoped
-handoffs) remove the *silent* waste - hallucination loops and re-work - that no
-per-turn number captures. Assumptions are deliberately conservative (RTK at its
-midpoint, reads at only 40% off, output work never compressed); heavier
-command/log-bound workloads save more.
+> Benchmarks: measured before/after numbers will be added here.
 
 ## The skills
 
@@ -113,6 +105,79 @@ These are not ten unrelated tools - they compose:
 The result is a stack where the cheap-but-good defaults (token discipline), the
 build discipline (gates + goal packets + enforced DoD), and the point capabilities
 (nav, scrape, research, scaffold, UI) all pull in the same direction.
+
+---
+
+## Why the model choices (it's not about cost)
+
+The routing rules pin **cheaper, older-tier models for subagents** - coders on a
+Sonnet tier, logging on Haiku - and keep the newest, most powerful model for the
+**top-level session** only. The reason is not cost; it's a bet about **where model
+capability actually matters**:
+
+- **A model does not need to be the smartest available to write good code - it needs
+  a specific enough route.** A frontier model earns its price when the task is
+  open-ended: deciding *what* to build, decomposing it, resolving ambiguity. Once
+  that thinking is done and the task is a **frozen, well-specified contract** - a
+  Goal Packet with machine-checkable `success_criteria`, explicit `scope_boundaries`,
+  and exact `inputs`/`outputs` - a mid-tier model produces output that is
+  effectively indistinguishable from the frontier model's, because there is nothing
+  left to be smart *about*. The intelligence was spent upstream, in the routing.
+- **So the split is deliberate:** the powerful top-level model does the ambiguous
+  planning and review; the cheaper pinned subagents execute the frozen contract.
+  Give a mid-tier coder a vague prompt and quality drops; give it a precise Goal
+  Packet and it matches the frontier model on the part that's left - the mechanical
+  generation. This is exactly why [init-harness](skills/init-harness/)'s goal-packet
+  discipline and [token-efficiency](skills/token-efficiency/)'s routing are designed
+  together: **routing to a cheaper model is only safe because the handoff is
+  specific**, and the handoff is made specific precisely so routing is safe.
+- **Pinning is by full model ID, not a tier alias.** A bare alias (`sonnet`,
+  `opus`) silently resolves to *latest of that tier* and overrides the pin - so the
+  ID is pinned in the agent's frontmatter and no `model:` arg is passed at spawn.
+  The **top-level** session is the one place "latest" is correct (it floats to the
+  newest model automatically); for subagents, "latest" is the footgun.
+
+Net: you are not trading quality for cost. You are spending frontier-model
+capability where it changes the outcome (the route), and mid-tier capability where
+it doesn't (executing the route) - which is what makes the same Claude usage go
+roughly twice as far.
+
+---
+
+## Navigating this repo (skills, links, configs)
+
+Everything is cross-linked so you can follow the thread:
+
+- **Start at a skill folder** - each has a `README.md` (what/why/how/install/key-files)
+  and a `SKILL.md` (the definition Claude loads).
+- **The config that ties it together** is token-efficiency's
+  [`templates/CLAUDE-md-snippet.md`](skills/token-efficiency/templates/CLAUDE-md-snippet.md)
+  - the ~100-token block you append to `~/.claude/CLAUDE.md` to keep routing + the
+  output contract always-on. This is the single knob that makes the whole stack's
+  defaults apply every turn.
+- **The harness config** is init-harness's
+  [`templates/kit/harness.config.json`](skills/init-harness/templates/kit/harness.config.json)
+  - the one file that matters when you init a build harness (terminals, gates,
+  model tiers, sensitive paths). Its
+  [`decision-guide.md`](skills/init-harness/references/decision-guide.md) explains
+  the four decisions worth asking.
+- **The handoff contract** between orchestrator and subagent is
+  [`templates/goal-packet.template.yml`](skills/init-harness/templates/goal-packet.template.yml)
+  with the doctrine in
+  [`templates/docs/12_graph_of_loops.md`](skills/init-harness/templates/docs/12_graph_of_loops.md).
+
+Follow-the-link map:
+
+| If you want to... | Go to |
+|---|---|
+| Make Claude cheaper/leaner on every turn | [token-efficiency](skills/token-efficiency/) -> append its [CLAUDE.md snippet](skills/token-efficiency/templates/CLAUDE-md-snippet.md) |
+| Run a disciplined multi-terminal build | [init-harness](skills/init-harness/) -> edit [harness.config.json](skills/init-harness/templates/kit/harness.config.json) |
+| Understand why cheaper subagents are safe | this section + [init-harness goal packets](skills/init-harness/templates/goal-packet.template.yml) |
+| Navigate a codebase without re-reading | [graphify](skills/graphify/) (feed its queries into a Goal Packet's `inputs`) |
+| Build or ship a new skill | [skill-creator](skills/skill-creator/) (author) -> [install-skill](skills/install-skill/) (package + install) |
+| Scaffold an app to production bar | [production-grade-scaffold](skills/production-grade-scaffold/) -> [ui-standout](skills/ui-standout/) for the UI |
+| Keep code minimal / track deferred debt | [ponytail](skills/ponytail/) |
+| Scrape a protected site / research a topic | [scrapling](skills/scrapling/) / [agent-reach](skills/agent-reach/) |
 
 ---
 

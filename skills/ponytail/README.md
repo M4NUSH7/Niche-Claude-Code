@@ -40,3 +40,7 @@ Say "ponytail", "be lazy", "simplest solution", "minimal", "yagni", "do less", o
 | `scripts/harvest_debt.py` | `ponytail:` marker -> debt ledger |
 | `scripts/check_left_behind.py` | Assert a runnable check was left behind |
 | `scripts/check.sh` | `lizard` spine check (complexity/length/params/dupes) |
+
+---
+
+**Related:** a point tool any build reaches for; complements [token-efficiency](../token-efficiency/) (leaner turns) and [init-harness](../init-harness/) (disciplined builds). See the [root README](../../README.md) for how the skills interlock and navigate.

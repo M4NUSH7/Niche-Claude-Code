@@ -23,6 +23,47 @@ The one meta-lesson behind the design: **the parts of a harness that survive are
 
 The Goal Packet + declared-terminals convention fixes the three things retrospectives found most broken: inferred-done (a subagent claiming success), unbounded silent retries (hallucination loops), and lost failures (a killed agent leaving no trace). Retries are bounded and visible; blocked/ambiguity are first-class terminals that route to a handoff note + a recall-surfaced ledger row.
 
+## How human and agent build together - and nothing slips through
+
+A real production build is not "let the agent run and hope." It is a **shared state
+machine the human and the agent both read and write**, where every decision that
+needs a person is surfaced explicitly and every fact is mechanical, not remembered.
+That is what makes the harness safe to leave running and safe to walk away from.
+
+- **One shared source of truth for "where are we."** The `.bld/tN/phases.md`
+  checkboxes ARE the task queue: the first unchecked box is the current task, so any
+  human or agent, in any session, resumes with zero handover. Nobody has to
+  reconstruct state from a chat log.
+- **The agent cannot silently mark its own work done.** A checkbox flips to done only
+  when the mechanical checks pass - `verify_goal_packet.py` runs the `success_criteria`
+  and assigns the terminal in code, and gates are git tags that `gate_guard.py`
+  enforces. "It looks done" never becomes "it's done" without a check that fails when
+  it isn't.
+- **Blocked work is a first-class state, not a dropped ball.** When the agent hits
+  something only a human can resolve - a decision, a missing input, an ambiguous spec -
+  it does not guess and it does not silently stop. It marks the task `- [!]`
+  (blocked/awaiting-human), writes a handoff note under `memory/handoff/` explaining
+  exactly what it tried and what it needs, and leaves a FAILURE-shaped ledger row.
+- **The human's decisions are gated in, not assumed.** Tags, merges, and pivots are
+  **human-gated**: the agent may propose, only a person approves. Sensitive paths
+  auto-escalate to the strong model + a security checklist. So the boundary between
+  "the agent may proceed" and "a human must sign off" is drawn in the config, not left
+  to the agent's judgment.
+- **Nothing a person needs to see gets buried.** Every blocked item and every past
+  failure is surfaced automatically at the start of the next session (the
+  SessionStart FAILURE recall reads the do-not-retry ledger), so a human returning to
+  the build sees exactly what is waiting on them and what already went wrong - without
+  scrolling a transcript.
+- **Drift between the tick and reality is caught.** Where a checkbox maps to a
+  verifiable fact (a git tag, a passing test, a merged PR), `harness_status.py` and CI
+  reconcile the human's tick against the machine truth, so a stale "done" is flagged
+  rather than trusted.
+
+The net effect: the agent does the volume of work, the human owns the judgment calls,
+and the handshake between them is a set of mechanical states - checkbox, gate, handoff
+note, ledger row - that neither side can skip. That is how a production build proceeds
+without either the human or the agent quietly missing something.
+
 ## How to use
 
 Say `/init-harness` (or "initialize the harness", or drop a `project-context.yml`). It runs preflight, asks the few decisions that cannot be inferred (terminal split, gate topology, sensitive paths, model tiers, permission posture) as MCQs, scaffolds, generates, and verifies that the guards actually block.
@@ -47,3 +88,7 @@ Say `/init-harness` (or "initialize the harness", or drop a `project-context.yml
 ## Scope note
 
 This is a **Claude Code** tool by nature - it initializes a persistent machine harness (`~/.claude` hooks, worktrees, per-terminal DBs). It does not have a Cowork edition because Cowork's ephemeral, account-loaded model does not fit the multi-terminal machine harness.
+
+---
+
+**Related:** defers to [token-efficiency](../token-efficiency/) for routing/output; its Goal Packet `inputs` can point at [graphify](../graphify/) queries; hands off to [production-grade-scaffold](../production-grade-scaffold/) for greenfield apps. See the [root README](../../README.md) for how the skills interlock and navigate.

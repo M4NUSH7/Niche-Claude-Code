@@ -44,3 +44,7 @@ python scripts/verify_skill.py <skill-dir> --package  # build <name>.skill
 | `references/windows-install.md` | robocopy `/E` vs `/MIR`, PATH one-liners, protected `~/.claude` |
 
 This repo was itself packaged and verified with this skill.
+
+---
+
+**Related:** packages what [skill-creator](../skill-creator/) authors; every skill in this repo was verified with it. See the [root README](../../README.md) for how the skills interlock and navigate.

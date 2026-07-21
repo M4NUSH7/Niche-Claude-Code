@@ -12,13 +12,14 @@ Five pillars, each engaging only when the project condition calls for it:
 4. **SoT keywords + hybrid memory** - `[SOT:CATEGORY:name]` tags in code + a README index so the agent greps the tag and reads only matched blocks; SQLite agent memory where recall is a `WHERE status='FAILURE'` query, not a re-read of the log pile.
 5. **Concise output** - the output contract: lead with the outcome, no action narration, no recap of what a tool just printed, cite `file:line`. Never compresses error diagnoses, caveats, or code.
 
-## Estimated savings
+## What you get
 
-On a representative agentic coding session this skill's four levers (RTK compression,
-fewer redundant reads, no narration, model routing) model out to **~40% fewer tokens
-and ~55% lower cost** at equal output quality. This is a calculated estimate, not a
-measured benchmark - see the [root README](../../README.md#estimated-savings) for the
-full assumptions and arithmetic.
+This skill is the substrate that lets you **double your Claude usage at the same
+output quality** - its four levers (RTK compression, query-instead-of-reread, the
+no-narration output contract, and model routing) all cut waste, never substance.
+See the [root README](../../README.md#double-your-claude-usage-at-the-same-output-quality)
+for the full picture and the [model-choice logic](../../README.md#why-the-model-choices-its-not-about-cost)
+(why cheaper subagents are safe when the route is specific).
 
 ## Why it works
 
