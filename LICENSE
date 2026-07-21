@@ -19,22 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-NOTICE - bundled third-party components
-
-This repository packages several skills that incorporate or bundle upstream
-code and content under their own licenses. The MIT license above applies to
-the original work in this repository; the following components remain under
-their upstream licenses, and those terms govern their use:
-
-- skills/scrapling/          - BSD-3-Clause (D4Vinci/Scrapling); see skills/scrapling/LICENSE.txt
-- skills/skill-creator/      - Anthropic (anthropics/skills); see skills/skill-creator/LICENSE.txt
-- skills/token-efficiency/bin/rtk.exe and the Cowork Linux rtk - Apache-2.0 (rtk-ai/rtk)
-- skills/ui-standout/references/taste-gate.md - rules harvested from impeccable, Apache-2.0 (pbakaus/impeccable)
-- skills/ui-standout/references/design-principles.md - from designer-skills, MIT (Owl-Listener/designer-skills)
-- skills/graphify/ and skills/agent-reach/ - packaged around graphifyy (MIT) and Agent-Reach (MIT) respectively
-
-See the Credits & upstream section of README.md for links. If you redistribute
-this repository, retain these upstream license notices.

@@ -1,0 +1,42 @@
+Niche Claude Code Skills
+Copyright (c) 2026 M4NUSH7
+
+The original work in this repository is licensed under the MIT License (see LICENSE).
+
+This repository additionally packages several skills that incorporate or bundle
+upstream code and content under their OWN licenses. Those components remain under
+their upstream licenses, and those terms govern their use. If you redistribute
+this repository, retain these upstream license notices.
+
+Bundled third-party components
+------------------------------
+
+- skills/scrapling/
+    BSD-3-Clause (D4Vinci/Scrapling). Full text: skills/scrapling/LICENSE.txt
+
+- skills/skill-creator/
+    Anthropic (anthropics/skills). Full text: skills/skill-creator/LICENSE.txt
+
+- skills/token-efficiency/bin/rtk.exe  and the Cowork Linux rtk binary
+    Apache-2.0 (rtk-ai/rtk). https://github.com/rtk-ai/rtk
+
+- skills/ui-standout/references/taste-gate.md
+    Rules harvested from impeccable, Apache-2.0 (pbakaus/impeccable).
+    https://github.com/pbakaus/impeccable
+
+- skills/ui-standout/references/design-principles.md
+    Adapted from designer-skills, MIT (Owl-Listener/designer-skills).
+    https://github.com/Owl-Listener/designer-skills
+
+- skills/graphify/
+    Packaged around the graphifyy CLI, MIT (Graphify-Labs/graphify).
+    https://github.com/Graphify-Labs/graphify
+
+- skills/agent-reach/
+    English variant of Agent-Reach, MIT (Panniantong/Agent-Reach).
+    https://github.com/Panniantong/Agent-Reach
+
+- skills/ponytail/ (spine check via lizard)
+    lizard, MIT (terryyin/lizard). https://github.com/terryyin/lizard
+
+See the "Credits & upstream" section of README.md for the full attribution table.

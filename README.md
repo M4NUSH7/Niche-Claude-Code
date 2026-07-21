@@ -118,6 +118,12 @@ it needs. That compounding is where "double your usage" actually comes from.
 
 Each folder has its own `README.md` with what/why/how/install and a key-files table.
 
+The centerpiece is **[init-harness](skills/init-harness/)** - my own work, and an
+exercise in **harness-engineering**: it was built from the outside in by noticing
+where agentic builds repeatedly fail in practice and turning each recurring failure
+into a mechanical guardrail (inferred-done, hallucination loops, lost failures,
+silent gate bypass). The rest of the stack grew around it.
+
 ---
 
 ## How they interlock
@@ -329,6 +335,6 @@ open an issue.
 The original work in this repository is licensed under the **[MIT License](LICENSE)**.
 
 Some skills bundle upstream code/content under their own licenses (Apache-2.0,
-BSD-3-Clause, Anthropic terms) - those components remain under their upstream
-licenses, listed in the NOTICE section of [LICENSE](LICENSE) and credited above.
-If you redistribute this repo, keep those upstream notices.
+BSD-3-Clause, Anthropic terms). Those components remain under their upstream
+licenses - listed in [NOTICE](NOTICE) and credited above. If you redistribute
+this repo, keep those upstream notices.

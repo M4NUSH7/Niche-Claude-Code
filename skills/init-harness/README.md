@@ -2,6 +2,15 @@
 
 **Stand up a parallel-terminal Claude Code build harness in one pass - with mechanical gates, scoped subagent handoffs, and enforced definition-of-done.**
 
+> The centerpiece of this repo, and my own work. init-harness is
+> **harness-engineering**: it did not come from a framework or a tutorial - it was
+> built from the outside in, by noticing where agentic builds *actually* fail in
+> practice and turning each recurring failure into a mechanical guardrail. Every
+> mechanism below maps to a specific, repeatedly-observed point of failure:
+> inferred-done, hallucination loops, lost failures, silent gate bypass,
+> re-reading the whole log pile, a killed agent leaving no trace. The design is the
+> pattern-recognition made mechanical.
+
 ## What it does
 
 Initializes a complete agentic build harness in a project: `preflight -> intake -> scaffold -> content -> derive -> verify`. It is ~80% a config generator - the heavy lifting (`sync_harness.py`, `harness_status.py`) already exists and is tested; you write one good `harness.config.json`, run the scripts, and prove the result blocks.
