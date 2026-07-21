@@ -149,17 +149,37 @@ Only the `skills/` tree is published here - no local config, no scratch files.
 
 ---
 
-## Provenance
+## About
 
-Some skills are original; some are repackaged from upstream projects (adapted,
-verified, ASCII-folded, with vendor installers deliberately NOT run so they do not
-fight a harness that owns `~/.claude`):
+These skills were built and refined while running Claude Code across real
+production codebases, then personalized for token efficiency and long-build
+discipline - keeping the output quality while cutting the cost and the drift.
+Nothing here is theoretical: each rule exists because a real build hit the
+failure mode it prevents.
 
-- **skill-creator** - Anthropic's official skill (anthropics/skills).
-- **scrapling** - the Scrapling library author's own agent-skill (D4Vinci/Scrapling).
-- **graphify** - packaged around the `graphifyy` CLI (Graphify-Labs).
-- **agent-reach** - English variant of Panniantong/agent-reach.
-- **ui-standout** - authored here; its taste-gate rules are harvested from
-  `impeccable` (Apache-2.0) and its principles from `designer-skills` (MIT).
+## Credits & upstream
 
-Each skill's `README.md` and `SKILL.md` note its specifics.
+Several skills are original to this repo; several are **repackaged from excellent
+upstream projects** - adapted for Claude Code / Cowork, verified, ASCII-folded,
+and with vendor installers deliberately **not** run (so they do not fight a
+harness that owns `~/.claude`). Full credit and thanks to the authors:
+
+| Skill / component | Upstream | License |
+|---|---|---|
+| **skill-creator** | [anthropics/skills](https://github.com/anthropics/skills) - Anthropic's official skill-authoring skill | Anthropic (see repo) |
+| **scrapling** | [D4Vinci/Scrapling](https://github.com/D4Vinci/Scrapling) - the library author's own agent-skill, by Karim Shoair | BSD-3-Clause |
+| **graphify** | [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify) - the `graphifyy` code-graph CLI | MIT |
+| **agent-reach** | [Panniantong/Agent-Reach](https://github.com/Panniantong/Agent-Reach) - English variant | MIT |
+| **token-efficiency** -> RTK | [rtk-ai/rtk](https://github.com/rtk-ai/rtk) - the bundled Rust Token Killer binary | Apache-2.0 |
+| **ponytail** -> lizard | [terryyin/lizard](https://github.com/terryyin/lizard) - the cross-language complexity spine check | MIT |
+| **ui-standout** -> taste gate | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) - the 46 anti-slop rules were harvested from here | Apache-2.0 |
+| **ui-standout** -> principles | [Owl-Listener/designer-skills](https://github.com/Owl-Listener/designer-skills) - the design-principle references | MIT |
+| **ui-standout** -> catalogs | [shadcn/ui](https://github.com/shadcn-ui/ui) (MIT), [StyleX](https://github.com/facebook/stylex) (MIT), [astryx](https://astryx.atmeta.com) (Meta), [Aceternity UI](https://ui.aceternity.com) - referenced as queryable component sources | see each |
+
+**token-efficiency**, **init-harness**, **install-skill**, **ponytail**,
+**ui-standout**, and **production-grade-scaffold** are authored/assembled here;
+where they wrap or harvest an upstream (RTK, lizard, impeccable, designer-skills),
+that upstream is credited above and in the skill's own `README.md` / `SKILL.md`.
+
+If you own one of these upstreams and want the attribution changed or removed,
+open an issue.
