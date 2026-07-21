@@ -7,6 +7,47 @@ as a plain folder (Code) or a `.skill` upload (Cowork).
 
 ---
 
+## Quickstart
+
+**Claude Code (CLI or the desktop Code tab):**
+
+```bash
+git clone https://github.com/M4NUSH7/Niche-Claude-Code
+cd Niche-Claude-Code
+
+# 1. Install the skills you want (they are plain folders).
+#    macOS / Linux:
+cp -r skills/token-efficiency skills/init-harness skills/ponytail ~/.claude/skills/
+#    ...or just the ones you need.
+```
+
+```powershell
+# Windows (mirror-copy each skill folder; never /MIR the shared parent):
+robocopy "skills\token-efficiency" "$env:USERPROFILE\.claude\skills\token-efficiency" /MIR
+```
+
+```bash
+# 2. Turn on the always-on defaults (routing + concise output every turn):
+#    append this ~100-token block to your ~/.claude/CLAUDE.md
+cat skills/token-efficiency/templates/CLAUDE-md-snippet.md >> ~/.claude/CLAUDE.md
+```
+
+Then just work - the skills trigger on their own descriptions (e.g. say
+`/init-harness` to scaffold a build harness, "be lazy" for ponytail, or run a dev
+command with `rtk` prefixed). Skills that wrap a tool install it on first use:
+`uv tool install graphifyy`, `uv tool install "scrapling[all]" && scrapling install`.
+
+**Cowork (desktop app):** don't copy folders - Cowork loads from your claude.ai
+account. Upload the `.skill` files from [`skills/cowork/`](skills/cowork/) via
+**Customize -> Skills -> upload**. Use the `-cowork` editions (they bundle the
+Linux build of any native binary).
+
+New here? Read [Why the model choices](#why-the-model-choices-its-not-about-cost)
+to understand the core idea, then [Navigating this repo](#navigating-this-repo-skills-links-configs)
+to find your way around. Full install detail is under [Installing](#installing).
+
+---
+
 ## Why this exists
 
 Capable coding models share a set of predictable failure modes:
@@ -280,3 +321,14 @@ that upstream is credited above and in the skill's own `README.md` / `SKILL.md`.
 
 If you own one of these upstreams and want the attribution changed or removed,
 open an issue.
+
+---
+
+## License
+
+The original work in this repository is licensed under the **[MIT License](LICENSE)**.
+
+Some skills bundle upstream code/content under their own licenses (Apache-2.0,
+BSD-3-Clause, Anthropic terms) - those components remain under their upstream
+licenses, listed in the NOTICE section of [LICENSE](LICENSE) and credited above.
+If you redistribute this repo, keep those upstream notices.
